@@ -1,3 +1,5 @@
+![header](public/og.png "Header")
+
 # 45-0
 
 Build an elite team of six Pokémon (spin an era and a type for each pick), then see what record it posts against
