@@ -2,11 +2,13 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import '@fontsource/press-start-2p'
 import '@fontsource/vt323'
+import { Analytics } from '@vercel/analytics/react'
 import './index.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
+    <Analytics />
   </StrictMode>,
 )

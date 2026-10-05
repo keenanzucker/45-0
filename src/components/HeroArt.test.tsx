@@ -78,3 +78,50 @@ describe('AnimatedLogo', () => {
     expect(container.querySelector('h1')!.textContent).toBe('45-0')
   })
 })
+
+describe('AnimatedLogo burst', () => {
+  const burstImgs = (c: HTMLElement) => [...c.querySelectorAll('.burst img')]
+
+  it('should throw out a burst of sprites when the logo is tapped', () => {
+    const { container } = render(<AnimatedLogo entries={entries} />)
+    expect(burstImgs(container)).toHaveLength(0)
+    fireEvent.click(container.querySelector('h1')!)
+    const imgs = burstImgs(container)
+    expect(imgs).toHaveLength(10)
+    expect(container.querySelector('.burst')!.getAttribute('aria-hidden')).toBe('true')
+    for (const img of imgs) expect(img.getAttribute('src')).toMatch(/^\/sprites\/\d+\.png$/)
+  })
+
+  it('should clear the burst once its sprites have flown off', () => {
+    const { container } = render(<AnimatedLogo entries={entries} />)
+    fireEvent.click(container.querySelector('h1')!)
+    fireEvent.animationEnd(container.querySelector('.burst__item')!)
+    expect(burstImgs(container)).toHaveLength(0)
+  })
+
+  it('should keep the logo text at 45-0 while sprites fly', () => {
+    const { container } = render(<AnimatedLogo entries={entries} />)
+    fireEvent.click(container.querySelector('h1')!)
+    expect(container.querySelector('h1')!.getAttribute('aria-label')).toBe('45-0')
+    expect(container.querySelector('h1')!.textContent).not.toContain('P')
+  })
+
+  it('should allow a few bursts at once but not an endless pile', () => {
+    const { container } = render(<AnimatedLogo entries={entries} />)
+    for (let i = 0; i < 6; i++) fireEvent.click(container.querySelector('h1')!)
+    expect(container.querySelectorAll('.burst')).toHaveLength(3)
+  })
+
+  it('should do nothing on tap when no Pokémon are given', () => {
+    const { container } = render(<AnimatedLogo />)
+    fireEvent.click(container.querySelector('h1')!)
+    expect(container.querySelector('.burst')).toBeNull()
+  })
+
+  it('should do nothing on tap when the user prefers reduced motion', () => {
+    vi.stubGlobal('matchMedia', () => ({ matches: true }))
+    const { container } = render(<AnimatedLogo entries={entries} />)
+    fireEvent.click(container.querySelector('h1')!)
+    expect(container.querySelector('.burst')).toBeNull()
+  })
+})

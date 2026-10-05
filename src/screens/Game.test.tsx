@@ -255,7 +255,7 @@ describe('normal mode draft', () => {
     await playAll(user, container)
     for (const m of container.querySelectorAll('.hof__mon')) {
       const order = [...m.children].map((c) => c.className.split(' ')[0])
-      expect(order).toEqual(['hof__name', 'sprite', 'hof__bst', 'ttags'])
+      expect(order).toEqual(['hof__name', 'hof__sprite', 'hof__bst', 'ttags'])
       expect(m.querySelectorAll('.ttags .ttag').length).toBeGreaterThanOrEqual(1)
     }
   })

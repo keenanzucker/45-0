@@ -450,8 +450,47 @@ button:disabled {
   to { transform: translateX(10px) rotate(8deg); }
 }
 
+/* Tapping the logo throws Pokémon out from its centre. */
+.hero__logo {
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.burst__item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: burst-out 900ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes burst-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  70% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1) rotate(var(--spin));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fall { display: none; }
+  .burst { display: none; }
   .hero__shine { animation: none; background: none; color: var(--blue-dark); }
 }
 
@@ -742,7 +781,7 @@ button:disabled {
 
 .run__team {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
   margin: 0;
   padding: 0 8px 8px;
@@ -841,7 +880,8 @@ button:disabled {
 /* ---------- team board ---------- */
 .board {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* minmax(0, …) keeps a long name from widening its column; the name ellipsizes instead. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
   margin: 0;
   padding: 0;
@@ -906,6 +946,40 @@ button:disabled {
 .slot .type {
   padding: 0 3px;
   font-size: 13px;
+}
+
+/* Short viewports (a phone with the browser toolbars showing): tighten the shell and the draft's top screen so the pick list keeps room. */
+@media (max-height: 760px) {
+  .ds {
+    padding: 6px 6px 8px;
+  }
+
+  .ds__hinge {
+    height: 14px;
+    margin: 4px 10px;
+  }
+
+  .ds__screen--top:has(.draft-top) {
+    min-height: 0;
+  }
+
+  .draft-top {
+    gap: 6px;
+    padding: 6px 8px;
+  }
+
+  .slot {
+    height: 74px;
+  }
+
+  .slot--filled .slot__kind {
+    display: none;
+  }
+
+  .slot .sprite {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 /* ---------- draft: bottom screen ---------- */
@@ -1105,9 +1179,87 @@ button:disabled {
   }
 }
 
+/* The sprite (and crown) bob gently, each team member on its own beat; a tap makes the whole sprite hop. */
+.hof__sprite {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.hof__sprite > * {
+  animation: hof-bob 2.2s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.37s);
+}
+
+.hof__sprite--hop {
+  animation: hof-hop 420ms ease-out;
+}
+
+.hof__sprite--spin {
+  animation: hof-spin 720ms ease-in-out;
+}
+
+.hof__crown {
+  position: absolute;
+  inset: 2px 0 auto;
+  font-size: 14px;
+  line-height: 1;
+  text-align: center;
+}
+
+@keyframes hof-bob {
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes hof-hop {
+  0% { transform: scale(1.12, 0.88); }
+  35% { transform: translateY(-14px) scale(0.94, 1.08); }
+  70% { transform: scale(1.12, 0.88); }
+  100% { transform: none; }
+}
+
+@keyframes hof-spin {
+  0% { transform: scale(1.12, 0.88); }
+  50% { transform: translateY(-18px) rotate(180deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Perfect run: confetti falls over the whole top screen. */
+.confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetti span {
+  position: absolute;
+  top: -10px;
+  left: var(--x);
+  width: 6px;
+  height: 6px;
+  animation: confetti-fall var(--dur) linear var(--delay) 3 both;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(380px) rotate(var(--turn));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hof__mon {
     animation: none;
+  }
+
+  .hof__sprite > * {
+    animation: none;
+  }
+
+  .confetti {
+    display: none;
   }
 }
 
@@ -1141,6 +1293,24 @@ button:disabled {
   font-size: 38px;
   color: var(--blue-dark);
   text-shadow: 3px 3px 0 #fff;
+}
+
+/* Gold shine is a gradient clipped to the text, so the shadow is a drop-shadow filter. */
+.result__record--gold {
+  color: transparent;
+  text-shadow: none;
+  background: linear-gradient(100deg, #b87800 40%, #ffe27a 50%, #b87800 60%) 120% 0 / 250% 100%;
+  background-clip: text;
+  filter: drop-shadow(3px 3px 0 #fff);
+  animation: logo-shine 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result__record--gold {
+    animation: none;
+    background: none;
+    color: #b87800;
+  }
 }
 
 .result__title {
@@ -1179,6 +1349,33 @@ button:disabled {
   overflow-y: auto;
 }
 
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badges__chip {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 3px 8px;
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+}
+
+.badges__chip span {
+  font-size: 11px;
+  line-height: 1;
+}
+
 .result-actions {
   flex: none;
   padding: 8px 10px 10px;
@@ -1187,7 +1384,7 @@ button:disabled {
 
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
   margin: 0;
   padding: 0;

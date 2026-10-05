@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react'
-
-const reducedMotion = () =>
-  typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+import { prefersReducedMotion } from './motion.ts'
 
 /** Counts 0 -> target quickly, then stops; instant when the user prefers reduced motion. */
 export function useCountUp(target: number, ms = 900): number {
-  const [value, setValue] = useState(() => (reducedMotion() ? target : 0))
+  const [value, setValue] = useState(() => (prefersReducedMotion() ? target : 0))
   useEffect(() => {
-    if (reducedMotion()) return
+    if (prefersReducedMotion()) return
     const start = performance.now()
     let raf = requestAnimationFrame(function tick(now) {
       const t = Math.min(1, (now - start) / ms)

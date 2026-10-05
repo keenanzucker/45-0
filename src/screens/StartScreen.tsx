@@ -18,7 +18,7 @@ export function StartScreen({ entries, onStart, onRecords }: Props) {
       top={
         <div className="hero">
           <FallingSprites entries={entries} seed={seed} />
-          <AnimatedLogo />
+          <AnimatedLogo entries={entries} />
           <p className="hero__tag">Build an elite team of six to take on the <span className="nowrap">45-trainer</span> gauntlet.</p>
         </div>
       }

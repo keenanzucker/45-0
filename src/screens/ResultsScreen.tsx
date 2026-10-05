@@ -7,6 +7,7 @@ import { buildShareText, encodeTeam, SITE_URL } from '../results/share.ts'
 import { Breakdown } from '../components/Breakdown.tsx'
 import { DsShell } from '../components/DsShell.tsx'
 import { ResultTop } from '../components/ResultTop.tsx'
+import { TeamBadges } from '../components/TeamBadges.tsx'
 
 interface Props {
   team: number[]
@@ -54,6 +55,7 @@ export function ResultsScreen({ team, mode, byId, gauntlet, sim, onBack, onPlayA
         <div className="result-bottom">
           <div className="result-scroll">
             <h2 className="h2 h2--center">Analysis</h2>
+            <TeamBadges team={entries} wins={result.wins} />
             <Breakdown team={entries} result={result} sim={sim} byId={byId} gauntlet={gauntlet} />
           </div>
 
